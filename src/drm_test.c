@@ -86,18 +86,17 @@ static int modeset_prepare(int fd)
     }
 
     if (res.count_fbs) {
-        res.fb_id_ptr = (__u64)malloc(res.count_fbs * sizeof(uint32_t));
+        res.fb_id_ptr = (__u64)calloc(sizeof(uint32_t), res.count_fbs);
     }
     if (res.count_crtcs) {
-        res.crtc_id_ptr = (__u64)malloc(res.count_fbs * sizeof(uint32_t));
+        res.crtc_id_ptr = (__u64)calloc(sizeof(uint32_t), res.count_crtcs);
     }
     if (res.count_connectors) {
-        res.connector_id_ptr = (__u64)malloc(res.count_connectors * 
-                sizeof(uint32_t));
+        res.connector_id_ptr = (__u64)calloc(sizeof(uint32_t), 
+                                             res.count_connectors);
     }
     if (res.count_encoders) {
-        res.encoder_id_ptr = (__u64)malloc(res.count_encoders * 
-                sizeof(uint32_t));
+        res.encoder_id_ptr = (__u64)calloc(sizeof(uint32_t), res.count_encoders);
     }
 
     ret = ioctl(fd, DRM_IOCTL_MODE_GETRESOURCES, &res);
@@ -110,8 +109,8 @@ static int modeset_prepare(int fd)
     /* printf("connector counts %d\n", res.count_connectors); */
     /* printf("fb counts %d\n", res.count_fbs); */
     struct modeset_dev *dev;
-    struct drm_mode_get_connector conn = {0};
     for (int i = 0; i < res.count_connectors; ++i) {
+        struct drm_mode_get_connector conn = {0};
         conn.connector_id = ((uint32_t*)res.connector_id_ptr)[i];
         ret = ioctl(fd, DRM_IOCTL_MODE_GETCONNECTOR, &conn);
         if (ret) {
