@@ -105,9 +105,9 @@ static int modeset_prepare(int fd)
         goto res_free;
     }
 
-    /* printf("crts counts %d\n", res.count_crtcs); */
-    /* printf("connector counts %d\n", res.count_connectors); */
-    /* printf("fb counts %d\n", res.count_fbs); */
+    printf("crts counts %d\n", res.count_crtcs);
+    printf("connector counts %d\n", res.count_connectors);
+    printf("fb counts %d\n", res.count_fbs);
     struct modeset_dev *dev;
     for (int i = 0; i < res.count_connectors; ++i) {
         struct drm_mode_get_connector conn = {0};
@@ -203,6 +203,7 @@ static int modeset_setup_dev(int fd, struct drm_mode_card_res *res,
 
     ret = modeset_find_crtc(fd, res, conn, dev);
     if (ret) {
+        fprintf(stderr, "cannot find crtc\n");
         goto err_alloc;
     }
 
@@ -320,6 +321,7 @@ static int modeset_create_fb(int fd, struct modeset_dev *dev)
         ret = -errno;
         goto err_destroy;
     }
+    dev->fb = fb_cmd.fb_id;
 
     mreq.handle = dev->handle;
     ret = ioctl(fd, DRM_IOCTL_MODE_MAP_DUMB, &mreq);
@@ -373,9 +375,11 @@ int main()
         struct drm_mode_crtc crtc = {0};
         crtc.crtc_id = iter->crtc;
         crtc.fb_id = iter->fb;
-        crtc.set_connectors_ptr = (__u64)iter->conn;
+        crtc.set_connectors_ptr = (__u64)&iter->conn;
         crtc.x = 0;
         crtc.y = 0;
+        crtc.mode_valid = 1;
+        crtc.count_connectors = 1;
         memcpy(&crtc.mode, &iter->mode, sizeof(crtc.mode));
         ret = ioctl(fd, DRM_IOCTL_MODE_SETCRTC, &crtc);
         if (ret) {
