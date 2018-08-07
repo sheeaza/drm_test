@@ -16,4 +16,4 @@ mkdir build && cd build
 cmake ../ && make
 ```
 
-4. the binary is under ```build/src/drm_test```, copy it to your target and run, it should show some color block.
+4. the binary is under ```build/src/drm_test```, copy it to your target and run, it should show some color block. If your target is running some display servers, first stop them, like: ```systemctl stop weston```.
