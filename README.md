@@ -1,4 +1,5 @@
 # drm_test
+This demo is based on https://github.com/dvdhrm/docs/blob/master/drm-howto/modeset.c
 
 ## build
 1. If you are using cross compile toolchain first souce enviroment, like:
